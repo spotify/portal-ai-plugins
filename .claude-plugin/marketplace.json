@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "portal",
+  "version": "0.1.0",
+  "description": "Official Spotify Portal plugin marketplace for AI coding tools.",
+  "owner": {
+    "name": "Spotify Portal"
+  },
+  "plugins": [
+    {
+      "name": "portal",
+      "description": "Set up, diagnose, search, and operate Spotify Portal through focused workflows, the Portal CLI, and tenant-specific MCP access.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Spotify Portal"
+      },
+      "homepage": "https://backstage.spotify.com/docs/portal",
+      "repository": "https://github.com/spotify/portal-ai-plugins",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/spotify/portal-ai-plugins.git"
+      },
+      "category": "developer-tools"
+    }
+  ]
+}

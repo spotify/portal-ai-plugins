@@ -1,0 +1,9 @@
+# Local coding-agent artifacts
+.claude/
+CLAUDE.local.md
+
+# IDEs
+.idea/
+
+# macOS
+.DS_Store

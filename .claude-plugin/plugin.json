@@ -1,0 +1,21 @@
+{
+  "name": "portal",
+  "displayName": "Spotify Portal",
+  "version": "0.1.0",
+  "description": "Set up, diagnose, search, and operate Spotify Portal through focused workflows, the Portal CLI, and tenant-specific MCP access.",
+  "author": {
+    "name": "Spotify Portal",
+    "url": "https://backstage.spotify.com/docs/portal"
+  },
+  "homepage": "https://backstage.spotify.com/docs/portal",
+  "repository": "https://github.com/spotify/portal-ai-plugins",
+  "license": "UNLICENSED",
+  "keywords": [
+    "developer-portal",
+    "software-catalog",
+    "service-ownership",
+    "backstage",
+    "mcp"
+  ],
+  "skills": "./skills/"
+}

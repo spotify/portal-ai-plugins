@@ -1,0 +1,43 @@
+{
+  "name": "portal",
+  "version": "0.1.0",
+  "description": "Set up, diagnose, search, and operate Spotify Portal through focused workflows and the Portal CLI.",
+  "author": {
+    "name": "Spotify Portal",
+    "url": "https://backstage.spotify.com/docs/portal"
+  },
+  "homepage": "https://backstage.spotify.com/docs/portal",
+  "repository": "https://github.com/spotify/portal-ai-plugins",
+  "license": "UNLICENSED",
+  "keywords": [
+    "developer-portal",
+    "software-catalog",
+    "service-ownership",
+    "backstage"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Spotify Portal",
+    "shortDescription": "Set up, diagnose, and operate Spotify Portal",
+    "longDescription": "Set up and diagnose Portal access, search the software catalog and documentation, inspect service ownership and health, and safely run Portal actions through the Portal CLI.",
+    "developerName": "Spotify Portal",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write",
+      "CLI"
+    ],
+    "websiteURL": "https://backstage.spotify.com/docs/portal",
+    "defaultPrompt": [
+      "Set up Spotify Portal for me.",
+      "Diagnose my Spotify Portal connection.",
+      "Find and brief me on a Portal service."
+    ],
+    "brandColor": "#1DB954",
+    "logo": "./assets/portal-icon-dark.svg",
+    "logoDark": "./assets/portal-icon-light.svg",
+    "screenshots": [
+      "./assets/portal-preview.png"
+    ]
+  }
+}
