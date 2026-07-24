@@ -5,8 +5,6 @@
   </picture>
 </p>
 
-<h1 align="center">Spotify Portal AI Plugin</h1>
-
 <p align="center">
   Set up, diagnose, search, and operate Spotify Portal from Claude Code, Codex, and Cursor.
 </p>
@@ -63,16 +61,6 @@ Register this private GitHub repository in the Cursor team marketplace, then ins
 
 Cursor uses the shared Portal CLI workflows. Portal MCP is not currently supported in Cursor.
 
-### Local development
-
-```bash
-gh repo clone spotify/portal-ai-plugins
-cd portal-ai-plugins
-claude --plugin-dir .
-```
-
-Codex can use a local checkout as a marketplace with `codex plugin marketplace add .`.
-
 ## Workflows
 
 | Workflow | Purpose |
@@ -110,15 +98,3 @@ npx @spotify/portal-cli <command>
 ```
 
 Setup verifies the required `auth`, `actions`, `owner`, `search`, and `service` commands before continuing. In Claude Code, CLI authentication and MCP OAuth remain separate sessions; MCP is only reported ready after a real read-only tool call succeeds.
-
-## Local validation
-
-```bash
-uv run --with pyyaml python \
-  ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py \
-  .
-
-claude plugin validate --strict .
-```
-
-The first command validates the Codex plugin package. The second validates the Claude Code marketplace and plugin manifests.
