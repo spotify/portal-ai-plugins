@@ -8,7 +8,7 @@
   },
   "homepage": "https://backstage.spotify.com/docs/portal",
   "repository": "https://github.com/spotify/portal-ai-plugins",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "keywords": [
     "developer-portal",
     "software-catalog",
