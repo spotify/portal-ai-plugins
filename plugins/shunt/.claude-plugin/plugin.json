@@ -1,0 +1,19 @@
+{
+  "name": "shunt",
+  "displayName": "Shunt",
+  "version": "0.2.0",
+  "description": "Shunts I/O-heavy work to AiKA modes to save tokens. Hooks block large file reads and redirect to bulk-reader/code-writer scripts backed by the Portal CLI.",
+  "author": {
+    "name": "Spotify"
+  },
+  "homepage": "https://backstage.spotify.com/docs/portal",
+  "repository": "https://github.com/spotify/portal-ai-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "token-optimization",
+    "model-routing",
+    "delegation",
+    "aika"
+  ],
+  "skills": "./skills/"
+}

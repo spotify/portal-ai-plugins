@@ -1,0 +1,142 @@
+{
+  "skill_name": "shunt",
+  "description": "Evals for the check-bash-read PreToolUse hook",
+  "evals": [
+    {
+      "id": 1,
+      "name": "cat-large-file",
+      "input": { "tool_input": { "command": "cat {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "Plain cat on large file — should block"
+    },
+    {
+      "id": 2,
+      "name": "cat-small-file",
+      "input": { "tool_input": { "command": "cat {{FIXTURES}}/small.txt" } },
+      "fixture": { "lines": 100 },
+      "expected_decision": "allow",
+      "reason": "Small file — not worth delegating"
+    },
+    {
+      "id": 3,
+      "name": "cat-with-flag",
+      "input": { "tool_input": { "command": "cat -n {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "cat with -n flag — should still block"
+    },
+    {
+      "id": 4,
+      "name": "head-large-file",
+      "input": { "tool_input": { "command": "head {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "head on large file — should block"
+    },
+    {
+      "id": 5,
+      "name": "head-with-count",
+      "input": { "tool_input": { "command": "head -100 {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "head -100 — still a bulk read, block"
+    },
+    {
+      "id": 6,
+      "name": "tail-large-file",
+      "input": { "tool_input": { "command": "tail {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "tail on large file — should block"
+    },
+    {
+      "id": 7,
+      "name": "less-large-file",
+      "input": { "tool_input": { "command": "less {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "less on large file — should block"
+    },
+    {
+      "id": 8,
+      "name": "cat-pipe",
+      "input": { "tool_input": { "command": "cat {{FIXTURES}}/large.txt | grep export" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "allow",
+      "reason": "Piped command — targeted read"
+    },
+    {
+      "id": 9,
+      "name": "cat-redirect",
+      "input": { "tool_input": { "command": "cat {{FIXTURES}}/large.txt > /tmp/out.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "allow",
+      "reason": "Redirect — copying file, not reading into context"
+    },
+    {
+      "id": 10,
+      "name": "non-read-command",
+      "input": { "tool_input": { "command": "git status" } },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "Not a file read command"
+    },
+    {
+      "id": 11,
+      "name": "grep-command",
+      "input": { "tool_input": { "command": "grep -n 'export' {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "allow",
+      "reason": "grep is a targeted search — not caught"
+    },
+    {
+      "id": 12,
+      "name": "cat-quoted-path",
+      "input": { "tool_input": { "command": "cat \"{{FIXTURES}}/large.txt\"" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "Quoted path — should still be caught"
+    },
+    {
+      "id": 13,
+      "name": "cat-nonexistent",
+      "input": { "tool_input": { "command": "cat /tmp/shunt-does-not-exist.txt" } },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "File doesn't exist — let Bash handle the error"
+    },
+    {
+      "id": 14,
+      "name": "empty-command",
+      "input": { "tool_input": { "command": "" } },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "Empty command — pass through"
+    },
+    {
+      "id": 15,
+      "name": "missing-command-field",
+      "input": { "tool_input": {} },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "No command field — pass through"
+    },
+    {
+      "id": 16,
+      "name": "more-large-file",
+      "input": { "tool_input": { "command": "more {{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 800 },
+      "expected_decision": "block",
+      "reason": "more on large file — only regex-matched command without coverage"
+    },
+    {
+      "id": 17,
+      "name": "head-n-space-count",
+      "input": { "tool_input": { "command": "head -n 5 {{FIXTURES}}/large.txt" } },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "Parser bug: -n and 5 are separate args, 5 is treated as file path — file '5' won't exist so allow"
+    }
+  ]
+}

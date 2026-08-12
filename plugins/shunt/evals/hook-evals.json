@@ -1,0 +1,145 @@
+{
+  "skill_name": "shunt",
+  "description": "Evals for the check-file-size PreToolUse hook",
+  "evals": [
+    {
+      "id": 1,
+      "name": "small-file",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/small.txt" } },
+      "fixture": { "lines": 100 },
+      "expected_decision": "allow",
+      "reason": "File under threshold — delegation overhead not worth it"
+    },
+    {
+      "id": 2,
+      "name": "boundary-exact-350",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/boundary.txt" } },
+      "fixture": { "lines": 350 },
+      "expected_decision": "allow",
+      "reason": "Exactly at threshold (<=350) — should not block"
+    },
+    {
+      "id": 3,
+      "name": "just-over-threshold",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/over.txt" } },
+      "fixture": { "lines": 351 },
+      "expected_decision": "block",
+      "reason": "One line over threshold — should block"
+    },
+    {
+      "id": 4,
+      "name": "large-file",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/large.txt" } },
+      "fixture": { "lines": 1200 },
+      "expected_decision": "block",
+      "reason": "Well over threshold — clear delegation candidate"
+    },
+    {
+      "id": 5,
+      "name": "very-large-file",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/huge.txt" } },
+      "fixture": { "lines": 5000 },
+      "expected_decision": "block",
+      "reason": "Very large file — blocked regardless of extension"
+    },
+    {
+      "id": 6,
+      "name": "empty-file",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/empty.txt" } },
+      "fixture": { "lines": 0 },
+      "expected_decision": "allow",
+      "reason": "Empty file — nothing to delegate"
+    },
+    {
+      "id": 7,
+      "name": "targeted-read-offset",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/large.txt", "offset": 100 } },
+      "fixture": { "lines": 1200 },
+      "expected_decision": "allow",
+      "reason": "Offset set — targeted read, allow through"
+    },
+    {
+      "id": 8,
+      "name": "targeted-read-limit",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/large.txt", "limit": 50 } },
+      "fixture": { "lines": 1200 },
+      "expected_decision": "allow",
+      "reason": "Limit set — targeted read, allow through"
+    },
+    {
+      "id": 9,
+      "name": "targeted-read-both",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/large.txt", "offset": 100, "limit": 50 } },
+      "fixture": { "lines": 1200 },
+      "expected_decision": "allow",
+      "reason": "Both offset and limit — definitely a targeted read"
+    },
+    {
+      "id": 10,
+      "name": "nonexistent-file",
+      "input": { "tool_input": { "file_path": "/tmp/shunt-does-not-exist.txt" } },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "File doesn't exist — let Read handle the error"
+    },
+    {
+      "id": 11,
+      "name": "empty-filepath",
+      "input": { "tool_input": { "file_path": "" } },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "Empty path — pass through"
+    },
+    {
+      "id": 12,
+      "name": "missing-filepath-field",
+      "input": { "tool_input": {} },
+      "fixture": null,
+      "expected_decision": "allow",
+      "reason": "No file_path field — pass through gracefully"
+    },
+    {
+      "id": 13,
+      "name": "offset-zero",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/large.txt", "offset": 0 } },
+      "fixture": { "lines": 1200 },
+      "expected_decision": "allow",
+      "reason": "offset:0 treated as targeted — known bypass, documenting behavior"
+    },
+    {
+      "id": 14,
+      "name": "limit-zero",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/large.txt", "limit": 0 } },
+      "fixture": { "lines": 1200 },
+      "expected_decision": "allow",
+      "reason": "limit:0 treated as targeted — known bypass, documenting behavior"
+    },
+    {
+      "id": 15,
+      "name": "env-override-lower",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/medium.txt" } },
+      "fixture": { "lines": 250 },
+      "env": { "SHUNT_MIN_LINES": "200" },
+      "expected_decision": "block",
+      "reason": "SHUNT_MIN_LINES=200 overrides default — 250-line file should block"
+    },
+    {
+      "id": 16,
+      "name": "env-override-higher",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/over.txt" } },
+      "fixture": { "lines": 351 },
+      "env": { "SHUNT_MIN_LINES": "500" },
+      "expected_decision": "allow",
+      "reason": "SHUNT_MIN_LINES=500 overrides default — 351-line file should be allowed"
+    },
+    {
+      "id": 17,
+      "name": "env-non-numeric-fallback",
+      "input": { "tool_input": { "file_path": "{{FIXTURES}}/over.txt" } },
+      "fixture": { "lines": 351 },
+      "env": { "SHUNT_MIN_LINES": "abc" },
+      "expected_decision": "block",
+      "reason": "Non-numeric SHUNT_MIN_LINES falls back to 350 — 351-line file blocked"
+    }
+  ]
+}

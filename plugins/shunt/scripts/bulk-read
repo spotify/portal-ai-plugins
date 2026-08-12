@@ -1,0 +1,58 @@
+#!/bin/bash
+# Delegate file reading to AiKA bulk-reader mode
+# Usage: bulk-read --question "what does this do?" --paths file1.ts file2.ts
+
+. "$(cd "$(dirname "$0")" && pwd)/lib/aika.sh"
+
+MODE_NAME="bulk-reader"
+
+question=""
+paths=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --question) question="$2"; shift 2 ;;
+    --paths)    shift; while [[ $# -gt 0 && ! "$1" =~ ^-- ]]; do paths+=("$1"); shift; done ;;
+    *)          shift ;;
+  esac
+done
+
+if [ -z "$question" ]; then
+  echo "Error: --question is required" >&2
+  exit 1
+fi
+
+if [ ${#paths[@]} -eq 0 ]; then
+  echo "Error: --paths is required" >&2
+  exit 1
+fi
+
+# A typo'd path would be sent as an empty <file> block and produce a
+# confident answer about nothing — fail loudly instead.
+for path in "${paths[@]}"; do
+  if [ ! -f "$path" ] || [ ! -r "$path" ]; then
+    echo "Error: file not found or unreadable: $path" >&2
+    exit 1
+  fi
+done
+
+shunt_preflight || exit 1
+shunt_tmpfile message_file || exit 1
+
+# Wrap each file in XML tags so the model sees clear boundaries. Stream
+# straight into the message file: no corpus-sized shell variable, and file
+# contents survive byte-for-byte.
+for path in "${paths[@]}"; do
+  {
+    printf '<file path="%s">\n' "$path"
+    cat "$path"
+    printf '</file>\n\n'
+  } >> "$message_file"
+done
+printf 'Question: %s\n' "$question" >> "$message_file"
+
+shunt_invoke "$MODE_NAME" "$message_file" || exit 1
+
+# Token usage to stderr
+char_count=$(wc -c < "$message_file" | tr -d ' ')
+echo "[shunt: ~$((char_count / 4)) input tokens | delegated to $MODE_NAME]" >&2

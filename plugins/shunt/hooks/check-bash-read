@@ -1,0 +1,40 @@
+#!/bin/bash
+# Block Bash commands that read large files, redirect to /bulk-reader skill
+# Catches cat/head/tail/less/more that bypass the Read hook
+
+MIN_LINES="${SHUNT_MIN_LINES:-350}"
+case "$MIN_LINES" in ''|*[!0-9]*) MIN_LINES=350 ;; esac
+
+input=$(cat)
+
+command=$(echo "$input" | jq -r '.tool_input.command // empty')
+[ -z "$command" ] && { echo '{"decision": "allow"}'; exit 0; }
+
+# Skip piped commands (cat file | grep) — those are targeted reads
+echo "$command" | grep -qE '\|' && { echo '{"decision": "allow"}'; exit 0; }
+
+# Skip redirections (cat file > out) — not a read-into-context operation
+echo "$command" | grep -qE '>' && { echo '{"decision": "allow"}'; exit 0; }
+
+# Extract file path from read commands, stripping flags (e.g. cat -n, head -100)
+file_path=""
+if echo "$command" | grep -qE '^(cat|head|tail|less|more) '; then
+  # Remove the command name, then strip any flags (-n, -100, --number, etc.)
+  args=$(echo "$command" | sed -E 's/^(cat|head|tail|less|more) +//')
+  for arg in $args; do
+    case "$arg" in
+      -*) continue ;;
+      *)  file_path=$(echo "$arg" | tr -d '"'"'"); break ;;
+    esac
+  done
+fi
+
+[ -z "$file_path" ] && { echo '{"decision": "allow"}'; exit 0; }
+[ ! -f "$file_path" ] && { echo '{"decision": "allow"}'; exit 0; }
+
+lines=$(wc -l < "$file_path" 2>/dev/null | tr -d ' ' || echo "0")
+if [ "$lines" -gt "$MIN_LINES" ]; then
+  echo "{\"decision\": \"block\", \"reason\": \"File is ${lines} lines (threshold: ${MIN_LINES}). Use the /bulk-reader skill to delegate this read to AiKA instead of cat/head/tail.\"}"
+else
+  echo '{"decision": "allow"}'
+fi

@@ -1,0 +1,60 @@
+#!/bin/bash
+# Delegate boilerplate generation to AiKA code-writer mode
+# Usage: code-write --spec "write tests for UserService" --reference ref.test.ts --target out.test.ts
+
+. "$(cd "$(dirname "$0")" && pwd)/lib/aika.sh"
+
+MODE_NAME="code-writer"
+
+spec=""
+reference=""
+target=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --spec)      spec="$2"; shift 2 ;;
+    --reference) reference="$2"; shift 2 ;;
+    --target)    target="$2"; shift 2 ;;
+    *)           shift ;;
+  esac
+done
+
+if [ -z "$spec" ]; then
+  echo "Error: --spec is required" >&2
+  exit 1
+fi
+
+# A bare spec would generate context-free code that matches nothing in the
+# project — fail loudly rather than write plausible-looking output.
+if [ -z "$reference" ]; then
+  echo "Error: --reference is required — pass a file whose patterns the output should match." >&2
+  echo "For a follow-up, reference the file the previous call just generated." >&2
+  exit 1
+fi
+if [ ! -f "$reference" ]; then
+  echo "Error: reference file not found: $reference" >&2
+  exit 1
+fi
+
+shunt_preflight || exit 1
+shunt_tmpfile message_file || exit 1
+shunt_tmpfile answer_file || exit 1
+
+printf 'Spec: %s\n\nReference:\n' "$spec" > "$message_file"
+cat "$reference" >> "$message_file"
+
+shunt_invoke "$MODE_NAME" "$message_file" > "$answer_file" || exit 1
+
+# Strip markdown fences (model sometimes wraps despite instructions)
+clean=$(sed '/^```/d' "$answer_file")
+
+# Write to target or stdout
+if [ -n "$target" ]; then
+  echo "$clean" > "$target"
+  echo "Wrote $(wc -l < "$target" | tr -d ' ') lines to $target" >&2
+else
+  echo "$clean"
+fi
+
+# Token usage to stderr
+echo "[shunt: delegated to $MODE_NAME]" >&2

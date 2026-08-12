@@ -23,6 +23,8 @@
 
 The workflow skills are bundled as plugin behavior. They are not published or installed as standalone skill packages.
 
+The marketplace also ships **shunt** (Claude Code only for now): a plugin that routes I/O-heavy agent work — bulk file reads and boilerplate generation — to AiKA modes running cheaper worker models, via the Portal CLI actions registry. See [`plugins/shunt/README.md`](plugins/shunt/README.md).
+
 ## Installation
 
 ### Claude Code
@@ -30,6 +32,7 @@ The workflow skills are bundled as plugin behavior. They are not published or in
 ```bash
 claude plugin marketplace add spotify/portal-ai-plugins
 claude plugin install portal@portal
+claude plugin install shunt@portal   # optional: token-saving AiKA delegation
 ```
 
 Start a new Claude Code session, then run:

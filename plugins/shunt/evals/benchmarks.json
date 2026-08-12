@@ -1,0 +1,39 @@
+{
+  "description": "Token savings benchmarks — measures Claude context tokens with vs without shunt",
+  "token_estimate": "chars / 4 (conservative approximation for code)",
+  "benchmarks": [
+    {
+      "id": 1,
+      "name": "single-large-file",
+      "description": "Read a 602-line service and summarize exports",
+      "type": "bulk-read",
+      "question": "What are all the exported items and what do they do?",
+      "paths": ["fixtures/websocket-handler.ts"]
+    },
+    {
+      "id": 2,
+      "name": "multi-file-cross-read",
+      "description": "Read three files and answer a cross-cutting question",
+      "type": "bulk-read",
+      "question": "Which classes and interfaces are exported across these files, and how do they relate to each other?",
+      "paths": ["fixtures/websocket-handler.ts", "fixtures/user-service.ts", "fixtures/order-service.test.ts"]
+    },
+    {
+      "id": 3,
+      "name": "source-plus-test",
+      "description": "Read source and test pair to understand coverage",
+      "type": "bulk-read",
+      "question": "What methods does UserService have, and which ones would be covered if we wrote tests following the OrderService test pattern?",
+      "paths": ["fixtures/user-service.ts", "fixtures/order-service.test.ts"]
+    },
+    {
+      "id": 4,
+      "name": "code-generation",
+      "description": "Generate unit tests from reference",
+      "type": "code-write",
+      "spec": "Write unit tests for UserService following the exact same patterns, structure, and assertions as the OrderService tests.",
+      "reference": "fixtures/order-service.test.ts",
+      "context_files": ["fixtures/user-service.ts", "fixtures/order-service.test.ts"]
+    }
+  ]
+}

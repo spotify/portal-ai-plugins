@@ -21,6 +21,18 @@
         "url": "https://github.com/spotify/portal-ai-plugins.git"
       },
       "category": "developer-tools"
+    },
+    {
+      "name": "shunt",
+      "description": "Shunts I/O-heavy work to AiKA modes to save tokens. Hooks block large file reads and redirect to bulk-reader/code-writer scripts backed by the Portal CLI.",
+      "version": "0.2.0",
+      "author": {
+        "name": "Spotify"
+      },
+      "homepage": "https://backstage.spotify.com/docs/portal",
+      "repository": "https://github.com/spotify/portal-ai-plugins",
+      "source": "./plugins/shunt",
+      "category": "developer-tools"
     }
   ]
 }
