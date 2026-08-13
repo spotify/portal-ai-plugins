@@ -2,10 +2,10 @@
 
 Bring [Spotify Portal](https://portal.spotify.com) into Claude Code, Codex, and Cursor.
 
-This plugin gives coding agents focused workflows for the
+This plugin provides focused workflows for the
 [Portal CLI](https://www.npmjs.com/package/@spotify/portal-cli): set up
 authentication, search your software catalog, build service briefings, run
-diagnostics, and invoke Portal actions from your coding agent.
+diagnostics, and invoke Portal actions.
 
 ## Highlights
 
