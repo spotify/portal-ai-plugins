@@ -1,27 +1,19 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/portal-icon-light.svg">
-    <img src="assets/portal-icon-dark.svg" alt="Spotify Portal for Backstage" width="72">
-  </picture>
-</p>
+# Spotify Portal AI Plugins
 
-<p align="center">
-  Set up, diagnose, search, and operate Spotify Portal from Claude Code, Codex, and Cursor.
-</p>
+Bring [Spotify Portal](https://portal.spotify.com) into Claude Code, Codex, and Cursor.
+
+This plugin gives coding agents focused workflows for the
+[Portal CLI](https://www.npmjs.com/package/@spotify/portal-cli): set up
+authentication, search your software catalog, build service briefings, run
+diagnostics, and invoke Portal actions from your coding agent.
 
 ## Highlights
 
-- Set up the Portal CLI for the current coding-agent host.
-- Diagnose plugin, CLI, authentication, and action readiness without changing state.
-- Search the software catalog and technical documentation using natural language.
-- Build concise service briefings covering ownership, health, incidents, and documentation.
-- Discover and safely invoke Portal actions with help, dry-run, and confirmation safeguards.
-
-## Overview
-
-[Spotify Portal for Backstage](https://backstage.spotify.com/docs/portal) is Spotify's managed internal developer portal. This plugin gives coding agents focused workflows for the Portal CLI.
-
-The workflow skills are bundled as plugin behavior. They are not published or installed as standalone skill packages.
+- Set up the Portal CLI for your current coding-agent environment.
+- Run read-only diagnostics to verify plugin, CLI, authentication, and action readiness.
+- Search the software catalog and technical documentation using natural language queries.
+- Generate concise service briefings with available ownership, health, incident, and documentation details.
+- Discover and safely invoke Portal actions with built-in help, dry-run, and confirmation safeguards.
 
 ## Installation
 
@@ -32,7 +24,7 @@ claude plugin marketplace add spotify/portal-ai-plugins
 claude plugin install portal@portal
 ```
 
-Start a new Claude Code session, then run:
+Start a new session and run:
 
 ```text
 /portal:setup
@@ -53,9 +45,9 @@ Set up Spotify Portal for me.
 
 ### Cursor
 
-Register this GitHub repository in the Cursor team marketplace, then install Spotify Portal from **Cursor Settings → Plugins**.
-
-Cursor uses the shared Portal CLI workflows.
+Register the [spotify/portal-ai-plugins](https://github.com/spotify/portal-ai-plugins)
+repository in your Cursor team marketplace, then install Spotify Portal from
+**Cursor Settings → Plugins**.
 
 ## Workflows
 
@@ -67,21 +59,7 @@ Cursor uses the shared Portal CLI workflows.
 | `service` | Produce a concise operational service briefing |
 | `actions` | Discover, inspect, preview, and safely invoke Portal actions |
 
-Claude Code exposes the plugin skills directly under the Portal namespace:
-
-```text
-/portal:setup [instance-name or backend-url]
-/portal:doctor [instance-name]
-/portal:search <query>
-/portal:service <service-name or entity-ref>
-/portal:actions [action-id]
-```
-
-Codex and Cursor auto-discover the same workflows from the plugin skills.
-
 ## Portal CLI
-
-Claude Code, Codex, and Cursor use the shared Portal CLI workflows.
 
 The workflows invoke the upstream CLI through:
 
@@ -89,4 +67,5 @@ The workflows invoke the upstream CLI through:
 npx @spotify/portal-cli <command>
 ```
 
-Setup verifies the required `auth`, `actions`, `owner`, `search`, and `service` commands before continuing.
+Setup verifies the required `auth`, `actions`, `owner`, `search`, and `service`
+commands before proceeding.
