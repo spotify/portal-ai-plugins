@@ -61,6 +61,7 @@ repository in your Cursor team marketplace, then install Spotify Portal from
 | `search` | Search the software catalog and technical documentation |
 | `service` | Produce a concise operational service briefing |
 | `actions` | Discover, inspect, preview, and safely invoke Portal actions |
+| `feedback` | Submit feedback about the Portal CLI to the Portal team |
 
 ## Portal CLI
 
