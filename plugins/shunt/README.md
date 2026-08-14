@@ -178,10 +178,10 @@ Tested against a 162K-line Java monorepo:
 
 | Scenario | Lines | Without shunt | With shunt | Savings |
 |----------|-------|--------------|------------|---------|
-| Single large file (SpotifyUri.java) | 4,014 | 33,684 tokens | 5,737 tokens | 82% |
-| Source + test pair (PromotionRuleRepository) | 7,408 | 75,990 tokens | 4,148 tokens | 94% |
-| Multi-file cross-service (permission handlers) | 1,281 | 16,221 tokens | 821 tokens | 94% |
-| Code-write (generate tests from reference) | 3,667 | 40,614 tokens + generation | 833 lines to disk | - |
+| Single large file | 4,014 | 33,684 tokens | 5,737 tokens | 82% |
+| Source + test pair | 7,408 | 75,990 tokens | 4,148 tokens | 94% |
+| Multi-file cross-service | 1,281 | 16,221 tokens | 821 tokens | 94% |
+| Code-write | 3,667 | 40,614 tokens + generation | 833 lines to disk | - |
 
 Mean bulk-read savings: **90%**
 
