@@ -17,6 +17,8 @@ diagnostics, and invoke Portal actions.
 
 The marketplace also ships **shunt** (Claude Code only for now): a plugin that routes I/O-heavy agent work — bulk file reads and boilerplate generation — to AiKA modes running cheaper worker models, via the Portal CLI actions registry. See [`plugins/shunt/README.md`](plugins/shunt/README.md).
 
+It also ships **fleetshift** (Claude Code only for now): skills to create, run, check, and troubleshoot Fleetshift shifts and open PRs from completed runs through Portal CLI actions.
+
 ## Installation
 
 ### Claude Code
@@ -25,6 +27,7 @@ The marketplace also ships **shunt** (Claude Code only for now): a plugin that r
 claude plugin marketplace add spotify/portal-ai-plugins
 claude plugin install portal@portal
 claude plugin install shunt@portal   # optional: token-saving AiKA delegation
+claude plugin install fleetshift@portal   # optional: Fleetshift shift workflows
 ```
 
 Start a new session and run:

@@ -33,6 +33,18 @@
       "repository": "https://github.com/spotify/portal-ai-plugins",
       "source": "./plugins/shunt",
       "category": "developer-tools"
+    },
+    {
+      "name": "fleetshift",
+      "description": "Create, run, check, and troubleshoot Fleetshift shifts and open PRs from completed runs through Portal CLI actions.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Spotify"
+      },
+      "homepage": "https://backstage.spotify.com/docs/portal",
+      "repository": "https://github.com/spotify/portal-ai-plugins",
+      "source": "./plugins/fleetshift",
+      "category": "developer-tools"
     }
   ]
 }
