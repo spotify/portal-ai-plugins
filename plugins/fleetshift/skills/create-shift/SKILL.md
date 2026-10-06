@@ -20,7 +20,16 @@ against each target repository with a prompt you provide.
 
 ## Prerequisites
 
-- The Portal CLI (`portal-cli`) is installed and authenticated.
+- The Portal CLI is authenticated: `npx @spotify/portal-cli auth show`.
+  If it isn't, ask the user to run `npx @spotify/portal-cli auth login`.
+  If `auth list` shows more than one Portal instance, confirm which one
+  with the user and pass `--instance <name>` on every call.
+- If a Portal MCP server is connected instead, the same actions are
+  available as `fleetshift_<action>` tools (for example
+  `fleetshift_list-shifts`). They take the same input, but have no
+  `--dry-run`, so the confirmation steps below matter even more.
+- Never pass `--yes`. It's only needed for actions marked destructive
+  (`close-prs`, `delete-shift`), and these skills don't call them.
 - You know what change the user wants and which repositories it applies to.
 
 ## 1. Scope the shift (read-only)
@@ -30,10 +39,10 @@ mutate anything and need no confirmation:
 
 ```bash
 # Existing shifts (names, owners, progress) so you can avoid collisions
-portal-cli actions fleetshift:list-shifts --input '{}'
+npx @spotify/portal-cli actions fleetshift:list-shifts --input '{}' --json
 
 # Details of an existing shift, if you want its targets/PR config as a model
-portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}'
+npx @spotify/portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}' --json
 ```
 
 - If a shift with the user's desired name already exists, surface it and
@@ -69,12 +78,20 @@ user can accept or tweak in the confirmation step.
 
 ## 3. Confirm explicitly, then create (mutating)
 
-Show the user the drafted payload (shift name, prompt, target scope, PR
-title/description) in one go, so they can confirm or adjust it in a single
-reply, and get explicit confirmation:
+First validate the drafted payload with `--dry-run`. This checks the input
+locally and doesn't create anything:
 
 ```bash
-portal-cli actions fleetshift:create-shift --input '{"name":"add-maintainers-header","title":"Add maintainers headers","type":"agent","shiftPrompt":"Add a Maintainers section to the README listing the owning team from catalog-info.yaml, keeping existing content intact.","targets":[{"source":"catalog","type":"entity","id":"component:default/my-service"}],"pullRequest":{"metadataMode":"generate","title":"Add maintainers header to README"}}'
+npx @spotify/portal-cli actions fleetshift:create-shift --input '{"name":"add-maintainers-header","title":"Add maintainers headers","type":"agent","shiftPrompt":"Add a Maintainers section to the README listing the owning team from catalog-info.yaml, keeping existing content intact.","targets":[{"source":"catalog","type":"entity","id":"component:default/my-service"}],"pullRequest":{"metadataMode":"generate","title":"Add maintainers header to README"}}' --dry-run --json
+```
+
+Fix anything the dry run rejects. Then show the user the drafted payload
+(shift name, prompt, target scope, PR title/description) in one go, so they
+can confirm or adjust it in a single reply. A dry run is not a create: only
+after an explicit "yes", run the same command without `--dry-run`:
+
+```bash
+npx @spotify/portal-cli actions fleetshift:create-shift --input '<the confirmed payload>' --json
 ```
 
 - The shift type must be `"agent"`.
@@ -88,7 +105,7 @@ portal-cli actions fleetshift:create-shift --input '{"name":"add-maintainers-hea
 After a successful create, verify with a read-only call and report the result:
 
 ```bash
-portal-cli actions fleetshift:get-shift --input '{"shiftName":"add-maintainers-header"}'
+npx @spotify/portal-cli actions fleetshift:get-shift --input '{"shiftName":"add-maintainers-header"}' --json
 ```
 
 Report the shift name, owner, target count, and what to do next — usually

@@ -17,19 +17,32 @@ Use this for:
 - A shift where the status breakdown shows failures.
 - A soundcheck check that is still failing after a shift ran.
 
+## Prerequisites
+
+- The Portal CLI is authenticated: `npx @spotify/portal-cli auth show`.
+  If it isn't, ask the user to run `npx @spotify/portal-cli auth login`.
+  If `auth list` shows more than one Portal instance, confirm which one
+  with the user and pass `--instance <name>` on every call.
+- If a Portal MCP server is connected instead, the same actions are
+  available as `fleetshift_<action>` tools (for example
+  `fleetshift_list-shifts`). They take the same input, but have no
+  `--dry-run`, so the confirmation steps below matter even more.
+- Never pass `--yes`. It's only needed for actions marked destructive
+  (`close-prs`, `delete-shift`), and these skills don't call them.
+
 ## Workflow (all read-only)
 
 ### 1. Identify the shift and failing targets
 
 ```bash
 # Find the shift
-portal-cli actions fleetshift:list-shifts --input '{}'
+npx @spotify/portal-cli actions fleetshift:list-shifts --input '{}' --json
 
 # Its definition + aggregate status breakdown
-portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}'
+npx @spotify/portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}' --json
 
 # The failing targets specifically
-portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobFailed"}'
+npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobFailed"}' --json
 ```
 
 ### 2. Pull job status and logs for the failed targets
@@ -38,10 +51,10 @@ For each failed (or stopped/skipped) target:
 
 ```bash
 # Job detail: terminal state, timestamps, references
-portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}'
+npx @spotify/portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}' --json
 
 # Raw logs + human-readable summary for the target — the main diagnostic
-portal-cli actions fleetshift:get-job-logs --input '{"shiftName":"<shift-name>","targetId":"component:default/my-service"}'
+npx @spotify/portal-cli actions fleetshift:get-job-logs --input '{"shiftName":"<shift-name>","targetId":"component:default/my-service"}' --json
 ```
 
 Look for the concrete reason: agent error, repo access/permissions, build

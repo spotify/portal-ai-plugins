@@ -21,8 +21,12 @@ need the confirmation step that triggering does:
 1. **Stop triggering.** Don't call `fleetshift:trigger-shift` for any target
    that hasn't been triggered yet, and drop the rest of the batch.
 2. **Stop polling.** End the monitor loop.
-3. **Stop the running jobs.** No Portal CLI action can stop a job, so send
-   the user to the Fleetshift UI, where stopping takes one click:
+3. **Stop the running jobs.** Check `npx @spotify/portal-cli actions list
+   --json` for a Fleetshift action that stops jobs (for example
+   `fleetshift:stop-jobs`). If one exists, call it right away for every
+   triggered job that hasn't reached a terminal state. If none exists, or
+   the call fails, send the user to the Fleetshift UI, where stopping takes
+   one click:
    - **All running jobs in a shift:** open
      `<portal-base-url>/fleetshift/shifts/<shift-name>`, select the running
      targets, and press **Stop (N)**.
@@ -42,37 +46,53 @@ the user explicitly asks, and get a clear "yes" first.
 
 ## Prerequisites
 
-- The Portal CLI (`portal-cli`) is installed and authenticated.
+- The Portal CLI is authenticated: `npx @spotify/portal-cli auth show`.
+  If it isn't, ask the user to run `npx @spotify/portal-cli auth login`.
+  If `auth list` shows more than one Portal instance, confirm which one
+  with the user and pass `--instance <name>` on every call.
+- If a Portal MCP server is connected instead, the same actions are
+  available as `fleetshift_<action>` tools (for example
+  `fleetshift_list-shifts`). They take the same input, but have no
+  `--dry-run`, so the confirmation steps below matter even more.
+- Never pass `--yes`. It's only needed for actions marked destructive
+  (`close-prs`, `delete-shift`), and these skills don't call them.
 - A shift definition already exists (see the `create-shift` skill).
 
 ## 1. Locate the shift and its targets (read-only)
 
 ```bash
 # Find the shift (list if unsure of the exact name)
-portal-cli actions fleetshift:list-shifts --input '{}'
+npx @spotify/portal-cli actions fleetshift:list-shifts --input '{}' --json
 
 # Its definition and status breakdown
-portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}'
+npx @spotify/portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}' --json
 
 # Its targets and their current status
-portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>"}'
+npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>"}' --json
 ```
 
 - Prefer running only targets that are `pending` (or re-running ones you
-  agree to re-run). Surface any targets that are already `running`,
-  `finished`, or `jobFailed` and confirm the intended scope.
+  agree to re-run). Surface any targets that are already `jobRunning`,
+  `jobComplete`, or `jobFailed` and confirm the intended scope.
 - If the shift backs a failing soundcheck check, route through
   `fleetshift:find-shift-for-soundcheck` first and confirm the matched shift
   with the user before running.
 
 ## 2. Confirm explicitly, then trigger (mutating)
 
-Present the shift name and the exact list of targets to run, and get explicit
-confirmation. `trigger-shift` runs **one target per call** and returns a
-`jobIdentifier` plus a `portalJobUrl`:
+`trigger-shift` runs **one target per call**. Validate the first call with
+`--dry-run`, which checks the input locally and triggers nothing:
 
 ```bash
-portal-cli actions fleetshift:trigger-shift --input '{"shiftName":"<shift-name>","targetId":"component:default/my-service","repo":"my-org/my-service"}'
+npx @spotify/portal-cli actions fleetshift:trigger-shift --input '{"shiftName":"<shift-name>","targetId":"component:default/my-service","repo":"my-org/my-service"}' --dry-run --json
+```
+
+Present the shift name and the exact list of targets to run, and get explicit
+confirmation. Then trigger each confirmed target without `--dry-run`. Each
+call returns a `jobIdentifier` and a `portalJobUrl`:
+
+```bash
+npx @spotify/portal-cli actions fleetshift:trigger-shift --input '{"shiftName":"<shift-name>","targetId":"component:default/my-service","repo":"my-org/my-service"}' --json
 ```
 
 - Record the `jobIdentifier` and `portalJobUrl` from **every** invocation —
@@ -93,7 +113,7 @@ After triggering, monitor each job with `fleetshift:get-job-status`, passing
 the `jobIdentifier` you recorded:
 
 ```bash
-portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}'
+npx @spotify/portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}' --json
 ```
 
 Terminal states to stop on: `jobComplete`, `jobFailed`, `stopped`, `skipped`,
