@@ -15,7 +15,16 @@ target. Only targets whose job is complete are eligible for a PR.
 
 ## Prerequisites
 
-- The Portal CLI (`portal-cli`) is installed and authenticated.
+- The Portal CLI is authenticated: `npx @spotify/portal-cli auth show`.
+  If it isn't, ask the user to run `npx @spotify/portal-cli auth login`.
+  If `auth list` shows more than one Portal instance, confirm which one
+  with the user and pass `--instance <name>` on every call.
+- If a Portal MCP server is connected instead, the same actions are
+  available as `fleetshift_<action>` tools (for example
+  `fleetshift_list-shifts`). They take the same input, but have no
+  `--dry-run`, so the confirmation steps below matter even more.
+- Never pass `--yes`. It's only needed for actions marked destructive
+  (`close-prs`, `delete-shift`), and these skills don't call them.
 - The shift has been run and at least one target reached a completed state
   (see the `run-shift` skill).
 
@@ -26,26 +35,33 @@ anything:
 
 ```bash
 # Aggregate: how many targets are jobComplete vs still running/failed
-portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}'
+npx @spotify/portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}' --json
 
 # Only the completed targets (the ones PRs would be opened for)
-portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobComplete"}'
+npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobComplete"}' --json
 
 # If you have a job identifier from a prior run, you can confirm its status too
-portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}'
+npx @spotify/portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}' --json
 ```
 
-- Skip targets still `running` or `failed` — they are not PR-eligible.
+- Skip targets that are `jobRunning` or `jobFailed`. They aren't PR-eligible.
 - If a target already has a `prUrl`, it is already covered; don't open a
   duplicate.
 
 ## 2. Confirm explicitly, then create (mutating)
 
-Present the exact number of PRs and the affected repositories to the user and
-get explicit confirmation before opening anything:
+Pass the eligible targets explicitly in `targetIds`, so only those get PRs.
+Validate the call with `--dry-run` first, which opens nothing:
 
 ```bash
-portal-cli actions fleetshift:create-prs --input '{"shiftName":"<shift-name>"}'
+npx @spotify/portal-cli actions fleetshift:create-prs --input '{"shiftName":"<shift-name>","targetIds":["component:default/my-service"]}' --dry-run --json
+```
+
+Present the exact number of PRs and the affected repositories to the user and
+get explicit confirmation. Then run the same command without `--dry-run`:
+
+```bash
+npx @spotify/portal-cli actions fleetshift:create-prs --input '{"shiftName":"<shift-name>","targetIds":["component:default/my-service"]}' --json
 ```
 
 - Confirm the count with the user first (e.g. "This opens 12 PRs — proceed?").
@@ -57,7 +73,7 @@ portal-cli actions fleetshift:create-prs --input '{"shiftName":"<shift-name>"}'
 Confirm each successfully created PR and report it:
 
 ```bash
-portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobComplete"}'
+npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobComplete"}' --json
 ```
 
 Link each opened PR (`prUrl`/`prNumber`). State clearly that the PRs are
