@@ -1,0 +1,19 @@
+{
+  "name": "fleetshift",
+  "displayName": "Fleetshift",
+  "version": "0.1.0",
+  "description": "Create, run, check, and troubleshoot Fleetshift shifts and open PRs from completed runs through Portal CLI actions.",
+  "author": {
+    "name": "Spotify"
+  },
+  "homepage": "https://backstage.spotify.com/docs/portal",
+  "repository": "https://github.com/spotify/portal-ai-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "fleetshift",
+    "fleet-management",
+    "migrations",
+    "portal"
+  ],
+  "skills": "./skills/"
+}
