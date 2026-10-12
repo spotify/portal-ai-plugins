@@ -1,12 +1,12 @@
 # Spotify Portal AI Plugin
 
-This repository packages Spotify Portal workflows for Claude Code, Codex, and Cursor.
+This repository packages Spotify Portal workflows for Claude Code, Codex, Cursor, and pi.
 
 ## Repository structure
 
 - `skills/` contains the canonical Portal workflow instructions.
 - `plugins/shunt/` contains the shunt plugin (Claude Code only for now): scripts, skills, hooks, and evals for routing I/O-heavy work to AiKA modes.
-- `.claude-plugin/`, `.codex-plugin/`, and `.cursor-plugin/` contain host manifests.
+- `.claude-plugin/`, `.codex-plugin/`, and `.cursor-plugin/` contain host manifests; pi reads its manifest from the `pi` key in the root `package.json`.
 - `assets/` contains shared Portal branding and product imagery.
 - `.claude-plugin/marketplace.json` exposes the repository as a Claude Code marketplace.
 
@@ -16,6 +16,7 @@ This repository packages Spotify Portal workflows for Claude Code, Codex, and Cu
 - Keep the plugin identifier `portal` so Claude Code skills use the `/portal:<workflow>` namespace.
 - Keep `doctor` read-only.
 - Keep each workflow canonical in `skills/`.
+- Keep the root `package.json` `pi` key pointing only at the portal skills directory so `plugins/<name>` sub-plugins stay hidden from pi. Keep its metadata aligned with the other host manifests.
 - Do not publish the bundled skills as standalone packages.
 - Do not add release automation unless a tagged GitHub release or another distribution channel is explicitly planned.
 - Preserve JSON output and dry-run safeguards when documenting Portal CLI operations.

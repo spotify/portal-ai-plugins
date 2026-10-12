@@ -1,6 +1,6 @@
 # Spotify Portal AI Plugins
 
-Bring [Spotify Portal](https://portal.spotify.com) into Claude Code, Codex, and Cursor.
+Bring [Spotify Portal](https://portal.spotify.com) into Claude Code, Codex, Cursor, and pi.
 
 This plugin provides focused workflows for the
 [Portal CLI](https://www.npmjs.com/package/@spotify/portal-cli): set up
@@ -51,6 +51,18 @@ Set up Spotify Portal for me.
 Register the [spotify/portal-ai-plugins](https://github.com/spotify/portal-ai-plugins)
 repository in your Cursor team marketplace, then install Spotify Portal from
 **Cursor Settings → Plugins**.
+
+### pi
+
+```bash
+pi install git:github.com/spotify/portal-ai-plugins
+```
+
+Start a new session and run:
+
+```text
+/skill:setup
+```
 
 ## Workflows
 
