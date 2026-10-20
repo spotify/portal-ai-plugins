@@ -27,8 +27,9 @@ Use it to answer:
   available as `fleetshift_<action>` tools (for example
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
-- Never pass `--yes`. It's only needed for actions marked destructive
-  (`close-prs`, `delete-shift`), and these skills don't call them.
+- Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
+  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  for `stop-jobs`.
 
 ## Workflow (all read-only)
 
@@ -38,13 +39,16 @@ Use it to answer:
 npx @spotify/portal-cli actions fleetshift:list-shifts --input '{}' --json
 ```
 
-Returns every shift with summary info (name, owner, target count, creation
-time). Use this to find the shift the user is asking about when they don't
-recall the exact name. If they don't name one, pick the most relevant recent
-shift they own instead of asking.
+Returns every shift with summary info: name, owner, `targetCount`, creation
+time, `statusCounts` (target counts per status) and `completedCount`
+(targets whose PR was merged). Use this to find the shift the user is asking
+about when they don't recall the exact name. If they don't name one, pick the
+most relevant recent shift they own instead of asking.
 
-Don't report progress from `list-shifts`: its `completedCount` isn't
-reliable. Get progress from `get-shift` in the next step.
+`statusCounts` is enough for a quick overview across shifts. Don't treat
+`completedCount` as overall progress: it only counts merged PRs. If a shift
+has no `statusCounts` (older Portal versions), get its progress from
+`get-shift` in the next step.
 
 ### 2. Drill into one shift
 

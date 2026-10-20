@@ -27,8 +27,9 @@ Use this for:
   available as `fleetshift_<action>` tools (for example
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
-- Never pass `--yes`. It's only needed for actions marked destructive
-  (`close-prs`, `delete-shift`), and these skills don't call them.
+- Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
+  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  for `stop-jobs`.
 
 ## Workflow (all read-only)
 
@@ -88,6 +89,7 @@ Do **not** perform it yourself — recommend one of:
 ## Boundaries
 
 - This skill never calls `create-shift`, `trigger-shift`, `create-prs`,
-  `close-prs`, or `delete-shift`, and never mutates any state.
+  `stop-jobs`, `close-prs`, or `delete-shift`, and never mutates any state.
+  If a job needs stopping, hand off to the `run-shift` kill switch.
 - If the diagnosis is inconclusive, say so plainly and suggest the user
   review the linked `portalJobUrl` for the failed job.

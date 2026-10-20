@@ -21,12 +21,29 @@ need the confirmation step that triggering does:
 1. **Stop triggering.** Don't call `fleetshift:trigger-shift` for any target
    that hasn't been triggered yet, and drop the rest of the batch.
 2. **Stop polling.** End the monitor loop.
-3. **Stop the running jobs.** Check `npx @spotify/portal-cli actions list
-   --json` for a Fleetshift action that stops jobs (for example
-   `fleetshift:stop-jobs`). If one exists, call it right away for every
-   triggered job that hasn't reached a terminal state. If none exists, or
-   the call fails, send the user to the Fleetshift UI, where stopping takes
-   one click:
+3. **Stop the running jobs.** Call `fleetshift:stop-jobs` right away, once,
+   with every triggered `jobIdentifier` that hasn't reached a terminal
+   state. Portal marks it as destructive, so the CLI needs `--yes`. The
+   user's request to stop is the authorization: don't ask again, and skip
+   `--dry-run` here because stopping must be immediate.
+
+   ```bash
+   npx @spotify/portal-cli actions fleetshift:stop-jobs --input '{"shiftName":"<shift-name>","jobIdentifiers":["<job-identifier-1>","<job-identifier-2>"]}' --yes --json
+   ```
+
+   If you no longer have the identifiers (new session, the monitor ended),
+   list the running targets: each one includes its `jobIdentifier`. Always
+   query with `offset: 0`, stop what it returns, and query again until it
+   returns nothing. Don't page with `offset`, because stopped jobs drop out
+   of the filtered list and later pages would skip running ones.
+
+   ```bash
+   npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobRunning","limit":250,"offset":0}' --json
+   ```
+
+   If `stop-jobs` isn't available (older Portal versions) or the call
+   fails, send the user to the Fleetshift UI, where stopping takes one
+   click:
    - **All running jobs in a shift:** open
      `<portal-base-url>/fleetshift/shifts/<shift-name>`, select the running
      targets, and press **Stop (N)**.
@@ -35,9 +52,10 @@ need the confirmation step that triggering does:
 
    List every triggered job that wasn't in a terminal state as a markdown
    link to its `portalJobUrl`, so the user has them all in one place.
-4. **Confirm it worked.** Once the user says they've stopped the jobs, call
-   `fleetshift:get-job-status` once for each job and check that it reports
-   `stopped` (or another terminal state). Report anything still running.
+4. **Confirm it worked.** Call `fleetshift:get-job-status` once for each
+   job (after the user says they've stopped them, if you used the UI) and
+   check that it reports `stopped` or another terminal state. Report
+   anything still running.
 
 Stopping doesn't delete the shift, and it doesn't touch PRs that were
 already opened. Closing PRs (`fleetshift:close-prs`) or deleting the shift
@@ -54,8 +72,8 @@ the user explicitly asks, and get a clear "yes" first.
   available as `fleetshift_<action>` tools (for example
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
-- Never pass `--yes`. It's only needed for actions marked destructive
-  (`close-prs`, `delete-shift`), and these skills don't call them.
+- Pass `--yes` only to `stop-jobs` in the kill switch. Never pass it to
+  `close-prs` or `delete-shift`; these skills don't call them.
 - A shift definition already exists (see the `create-shift` skill).
 
 ## 1. Locate the shift and its targets (read-only)

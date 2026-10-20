@@ -23,8 +23,9 @@ target. Only targets whose job is complete are eligible for a PR.
   available as `fleetshift_<action>` tools (for example
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
-- Never pass `--yes`. It's only needed for actions marked destructive
-  (`close-prs`, `delete-shift`), and these skills don't call them.
+- Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
+  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  for `stop-jobs`.
 - The shift has been run and at least one target reached a completed state
   (see the `run-shift` skill).
 
@@ -81,8 +82,8 @@ created but not merged, and that the user must review/merge them.
 
 ## Boundaries
 
-- **No destructive actions.** This skill never calls `close-prs`,
-  `delete-shift`, or any action that removes or reverts work.
+- **No destructive actions.** This skill never calls `stop-jobs`,
+  `close-prs`, `delete-shift`, or any action that removes or reverts work.
 - If a target is `jobFailed` and the user wants it fixed, point to the
   `troubleshoot-shift` skill (diagnosis) and `run-shift` (re-run) — both
   keep their own explicit confirmation requirement.

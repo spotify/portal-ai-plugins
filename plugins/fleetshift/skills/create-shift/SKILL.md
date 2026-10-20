@@ -28,8 +28,9 @@ against each target repository with a prompt you provide.
   available as `fleetshift_<action>` tools (for example
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
-- Never pass `--yes`. It's only needed for actions marked destructive
-  (`close-prs`, `delete-shift`), and these skills don't call them.
+- Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
+  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  for `stop-jobs`.
 - You know what change the user wants and which repositories it applies to.
 
 ## 1. Scope the shift (read-only)
