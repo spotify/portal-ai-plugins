@@ -35,7 +35,12 @@ need the confirmation step that triggering does:
    list the running targets: each one includes its `jobIdentifier`. Always
    query with `offset: 0`, stop what it returns, and query again until it
    returns nothing. Don't page with `offset`, because stopped jobs drop out
-   of the filtered list and later pages would skip running ones.
+   of the filtered list and later pages would skip running ones. If it
+   returns only jobs that `stop-jobs` already rejected, stop looping.
+
+   `stop-jobs` reports a job it couldn't stop as `rejected` instead of
+   failing the call. Report every `rejected` job to the user and send them
+   to the Fleetshift UI fallback below for those jobs.
 
    ```bash
    npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"jobRunning","limit":250,"offset":0}' --json
