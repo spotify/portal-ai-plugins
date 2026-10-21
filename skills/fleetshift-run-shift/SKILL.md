@@ -85,13 +85,22 @@ npx @spotify/portal-cli actions fleetshift:list-shifts --input '{}' --json
 # Its definition and status breakdown
 npx @spotify/portal-cli actions fleetshift:get-shift --input '{"shiftName":"<shift-name>"}' --json
 
-# Its targets and their current status
+# Its targets and their current status. Targets that were never triggered
+# are included as `pending`, with no job fields.
 npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>"}' --json
+
+# Only the targets still waiting to run
+npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftName":"<shift-name>","status":"pending","limit":250,"offset":0}' --json
 ```
 
 - Prefer running only targets that are `pending` (or re-running ones you
   agree to re-run). Surface any targets that are already `jobRunning`,
   `jobComplete`, or `jobFailed` and confirm the intended scope.
+- **Re-running a completed target replaces its result.** A target only
+  keeps its latest run. If you re-run a `jobComplete` target and the new run
+  fails or is stopped, the earlier result can no longer be used to open a
+  PR. Before re-running a `jobComplete` target, say so, and suggest
+  `fleetshift-create-prs` first if the user wants that change as a PR.
 - If the shift backs a failing soundcheck check, route through
   `fleetshift:find-shift-for-soundcheck` first and confirm the matched shift
   with the user before running.
@@ -106,8 +115,10 @@ npx @spotify/portal-cli actions fleetshift:trigger-shift --input '{"shiftName":"
 ```
 
 Present the shift name and the exact list of targets to run, and get explicit
-confirmation. Then trigger each confirmed target without `--dry-run`. Each
-call returns a `jobIdentifier` and a `portalJobUrl`:
+confirmation. List them every time, even if the user already said "run it" or
+approved the shift earlier: a "yes" counts only after they've seen the exact
+targets for this run. Then trigger each confirmed target without `--dry-run`.
+Each call returns a `jobIdentifier` and a `portalJobUrl`:
 
 ```bash
 npx @spotify/portal-cli actions fleetshift:trigger-shift --input '{"shiftName":"<shift-name>","targetId":"component:default/my-service","repo":"my-org/my-service"}' --json

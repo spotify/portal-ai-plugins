@@ -77,14 +77,14 @@ npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftNam
 
 Returns per-target status and `prUrl`/`prNumber` when a PR exists.
 
-`get-shift-targets` may only list targets that have been triggered at least
-once, so its `total` can be lower than the shift's target count. Count
-untriggered targets from `statusBreakdown.pending` in `get-shift` instead.
+Targets that were never triggered are included with status `pending` and no
+job fields, so `total` matches the shift's target count. Each triggered
+target includes its latest `jobIdentifier`.
 
 ### 4. (Optional) Check a specific job or its logs
 
-If the user wants detail on one run — and you have its `jobIdentifier` from a
-previous `fleetshift-run-shift` session:
+If the user wants detail on one run, use the target's `jobIdentifier` from
+`get-shift-targets` (or from an earlier `fleetshift-run-shift` session):
 
 ```bash
 npx @spotify/portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}' --json

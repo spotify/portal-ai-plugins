@@ -48,6 +48,14 @@ npx @spotify/portal-cli actions fleetshift:get-shift-targets --input '{"shiftNam
 
 ### 2. Pull job status and logs for the failed targets
 
+Fleetshift keeps job logs for 30 days. Check each failed target's
+`updatedAt` (from `get-shift-targets`) first. If it's older than 30 days,
+expect `get-job-logs` to return "No archived logs available": say the logs
+have expired rather than guessing a cause, and offer a re-run of those
+targets through `fleetshift-run-shift` to capture fresh logs.
+`get-job-status` doesn't carry a failure reason, so the logs are the only
+source of a cause.
+
 For each failed (or stopped/skipped) target:
 
 ```bash
