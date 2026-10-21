@@ -1,5 +1,5 @@
 ---
-name: create-shift
+name: fleetshift-create-shift
 description: 'Create a Fleetshift shift definition that runs an agent to apply transformations across a set of repository targets. Use when the user wants to set up a reusable, repeatable change (e.g. "add a header to every service", "migrate every repo from X to Y") that can later be run, checked on, and have PRs opened from it. Requires explicit user confirmation before creating the shift.'
 ---
 
@@ -7,8 +7,8 @@ description: 'Create a Fleetshift shift definition that runs an agent to apply t
 
 A Fleetshift **shift** is a reusable definition: an agent prompt plus a set of
 repository targets and PR metadata. Once created, a shift can be run
-(`run-shift`), checked on (`check-shift`), and have PRs opened from it
-(`create-prs`).
+(`fleetshift-run-shift`), checked on (`fleetshift-check-shift`), and have PRs opened from it
+(`fleetshift-create-prs`).
 
 This skill creates **agent**-type shifts only: the shift runs an LLM agent
 against each target repository with a prompt you provide.
@@ -29,7 +29,7 @@ against each target repository with a prompt you provide.
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
 - Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
-  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  `close-prs`, `delete-shift`). Only the `fleetshift-run-shift` kill switch uses it,
   for `stop-jobs`.
 - You know what change the user wants and which repositories it applies to.
 
@@ -110,11 +110,11 @@ npx @spotify/portal-cli actions fleetshift:get-shift --input '{"shiftName":"add-
 ```
 
 Report the shift name, owner, target count, and what to do next — usually
-"run it" (see `run-shift`).
+"run it" (see `fleetshift-run-shift`).
 
 ## After
 
-- To run it: use the `run-shift` skill.
-- To check on runs/PRs later: use the `check-shift` skill (read-only, safe
+- To run it: use the `fleetshift-run-shift` skill.
+- To check on runs/PRs later: use the `fleetshift-check-shift` skill (read-only, safe
   to run days or weeks later).
-- To open PRs for completed targets: use the `create-prs` skill.
+- To open PRs for completed targets: use the `fleetshift-create-prs` skill.

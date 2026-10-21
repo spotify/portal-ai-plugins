@@ -1,6 +1,6 @@
 ---
-name: run-shift
-description: 'Run an existing Fleetshift shift against its targets: triggers the agent jobs and monitors them to completion with a bounded wait. Also covers the kill switch for stopping a run (halt triggering, stop running jobs) when the user changes their mind. Use when the user wants to actually execute a previously created shift (see create-shift), or to stop or cancel one. Requires explicit user confirmation before triggering, and never waits indefinitely — it polls with a hard time/attempt cap and reports where things stand.'
+name: fleetshift-run-shift
+description: 'Run an existing Fleetshift shift against its targets: triggers the agent jobs and monitors them to completion with a bounded wait. Also covers the kill switch for stopping a run (halt triggering, stop running jobs) when the user changes their mind. Use when the user wants to actually execute a previously created shift (see fleetshift-create-shift), or to stop or cancel one. Requires explicit user confirmation before triggering, and never waits indefinitely — it polls with a hard time/attempt cap and reports where things stand.'
 ---
 
 # Run a Fleetshift shift
@@ -74,7 +74,7 @@ the user explicitly asks, and get a clear "yes" first.
   `--dry-run`, so the confirmation steps below matter even more.
 - Pass `--yes` only to `stop-jobs` in the kill switch. Never pass it to
   `close-prs` or `delete-shift`; these skills don't call them.
-- A shift definition already exists (see the `create-shift` skill).
+- A shift definition already exists (see the `fleetshift-create-shift` skill).
 
 ## 1. Locate the shift and its targets (read-only)
 
@@ -141,7 +141,7 @@ Terminal states to stop on: `jobComplete`, `jobFailed`, `stopped`, `skipped`,
   interval of 30 seconds**, and never continue past a **total wall-clock cap
   of 15 minutes** per shift. Stop on the first terminal state.
 - If a job reaches `jobFailed` (or `stopped`/`skipped`), stop polling that
-  job, note it, and continue to the `troubleshoot-shift` skill for diagnosis —
+  job, note it, and continue to the `fleetshift-troubleshoot-shift` skill for diagnosis —
   do not silently retry it.
 - If the bound is hit with jobs still non-terminal, stop and report:
   they are still running, with the `portalJobUrl` for each so the user can
@@ -151,12 +151,12 @@ Terminal states to stop on: `jobComplete`, `jobFailed`, `stopped`, `skipped`,
 
 Summarize per target: status, and any `prUrl`. For every triggered job,
 always include its `portalJobUrl` as a markdown link. If any targets reached
-`jobComplete`, suggest the `create-prs` skill (which itself requires explicit
+`jobComplete`, suggest the `fleetshift-create-prs` skill (which itself requires explicit
 confirmation).
 
 ## After
 
-- To check on the shift later (even days/weeks after): `check-shift`.
-- To open PRs for completed targets: `create-prs`.
-- To diagnose failed jobs: `troubleshoot-shift`.
+- To check on the shift later (even days/weeks after): `fleetshift-check-shift`.
+- To open PRs for completed targets: `fleetshift-create-prs`.
+- To diagnose failed jobs: `fleetshift-troubleshoot-shift`.
 - To stop a run in progress: see **Kill switch** above.

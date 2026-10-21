@@ -1,5 +1,5 @@
 ---
-name: create-prs
+name: fleetshift-create-prs
 description: 'Open pull requests from completed Fleetshift shift runs. Use after a shift has run and targets reached a "finished/jobComplete" state — this turns the agent-made changes into reviewable PRs on the target repositories. Requires explicit user confirmation before creating any PRs. Only opens PRs; it never closes, archives, or reverts anything.'
 ---
 
@@ -24,10 +24,10 @@ target. Only targets whose job is complete are eligible for a PR.
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
 - Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
-  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  `close-prs`, `delete-shift`). Only the `fleetshift-run-shift` kill switch uses it,
   for `stop-jobs`.
 - The shift has been run and at least one target reached a completed state
-  (see the `run-shift` skill).
+  (see the `fleetshift-run-shift` skill).
 
 ## 1. Confirm PRs can be opened (read-only)
 
@@ -85,5 +85,5 @@ created but not merged, and that the user must review/merge them.
 - **No destructive actions.** This skill never calls `stop-jobs`,
   `close-prs`, `delete-shift`, or any action that removes or reverts work.
 - If a target is `jobFailed` and the user wants it fixed, point to the
-  `troubleshoot-shift` skill (diagnosis) and `run-shift` (re-run) — both
+  `fleetshift-troubleshoot-shift` skill (diagnosis) and `fleetshift-run-shift` (re-run) — both
   keep their own explicit confirmation requirement.

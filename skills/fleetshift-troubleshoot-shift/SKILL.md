@@ -1,5 +1,5 @@
 ---
-name: troubleshoot-shift
+name: fleetshift-troubleshoot-shift
 description: 'Diagnose why a Fleetshift shift or job failed: find failed targets, pull their job logs and status, and explain the root cause and the safe next step. Read-only and safe to run anytime. Use when a shift run fails, a target ends in jobFailed/stopped, or a soundcheck check is still failing after a run.'
 ---
 
@@ -8,7 +8,7 @@ description: 'Diagnose why a Fleetshift shift or job failed: find failed targets
 This skill is **read-only**. It only inspects shift, target, job, and log
 state to explain _why_ something failed — it never mutates, triggers, or
 re-opens anything, and needs no confirmation. If a fix is needed, it hands off
-to the mutating skills (`run-shift`, `create-prs`), which enforce their own
+to the mutating skills (`fleetshift-run-shift`, `fleetshift-create-prs`), which enforce their own
 explicit confirmation.
 
 Use this for:
@@ -28,7 +28,7 @@ Use this for:
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
 - Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
-  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  `close-prs`, `delete-shift`). Only the `fleetshift-run-shift` kill switch uses it,
   for `stop-jobs`.
 
 ## Workflow (all read-only)
@@ -80,16 +80,16 @@ the failing checks before suggesting a re-run.
 
 Do **not** perform it yourself — recommend one of:
 
-- **Re-run the failed targets** → `run-shift` skill (requires explicit user
+- **Re-run the failed targets** → `fleetshift-run-shift` skill (requires explicit user
   confirmation; consider re-running only the failed targets).
-- **Open PRs** once a target is `jobComplete` → `create-prs` skill (requires
+- **Open PRs** once a target is `jobComplete` → `fleetshift-create-prs` skill (requires
   explicit user confirmation).
-- **Check on the overall state** later → `check-shift` skill (read-only).
+- **Check on the overall state** later → `fleetshift-check-shift` skill (read-only).
 
 ## Boundaries
 
 - This skill never calls `create-shift`, `trigger-shift`, `create-prs`,
   `stop-jobs`, `close-prs`, or `delete-shift`, and never mutates any state.
-  If a job needs stopping, hand off to the `run-shift` kill switch.
+  If a job needs stopping, hand off to the `fleetshift-run-shift` kill switch.
 - If the diagnosis is inconclusive, say so plainly and suggest the user
   review the linked `portalJobUrl` for the failed job.

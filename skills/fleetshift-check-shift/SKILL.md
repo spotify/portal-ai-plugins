@@ -1,5 +1,5 @@
 ---
-name: check-shift
+name: fleetshift-check-shift
 description: 'Read-only status check on Fleetshift shifts: what ran, which targets finished/failed, which PRs were opened and their state. Safe to run days or weeks after a shift was created or run. Use when the user asks "how is my shift going", "what happened to that fleetshift", "are the PRs merged yet", or wants a recap of a shift they ran a while ago.'
 ---
 
@@ -28,7 +28,7 @@ Use it to answer:
   `fleetshift_list-shifts`). They take the same input, but have no
   `--dry-run`, so the confirmation steps below matter even more.
 - Never pass `--yes`. It confirms actions marked destructive (`stop-jobs`,
-  `close-prs`, `delete-shift`). Only the `run-shift` kill switch uses it,
+  `close-prs`, `delete-shift`). Only the `fleetshift-run-shift` kill switch uses it,
   for `stop-jobs`.
 
 ## Workflow (all read-only)
@@ -84,7 +84,7 @@ untriggered targets from `statusBreakdown.pending` in `get-shift` instead.
 ### 4. (Optional) Check a specific job or its logs
 
 If the user wants detail on one run — and you have its `jobIdentifier` from a
-previous `run-shift` session:
+previous `fleetshift-run-shift` session:
 
 ```bash
 npx @spotify/portal-cli actions fleetshift:get-job-status --input '{"jobIdentifier":"<job-identifier>"}' --json
@@ -100,11 +100,11 @@ Both are read-only and idempotent — fine to call months later.
   3 failed, 5 pending").
 - Link each opened PR (`prUrl`) and, when available, its merge state.
 - If targets failed, summarize the failed ones and point to the
-  `troubleshoot-shift` skill for diagnosis.
+  `fleetshift-troubleshoot-shift` skill for diagnosis.
 
 ## Boundaries
 
 - This skill makes **no** `create-shift`, `trigger-shift`, or `create-prs`
   calls, and never archives, deletes, or closes anything.
-- If the user wants to (re)run a shift or open PRs, hand off to `run-shift`
-  or `create-prs` — each of those requires explicit user confirmation.
+- If the user wants to (re)run a shift or open PRs, hand off to `fleetshift-run-shift`
+  or `fleetshift-create-prs` — each of those requires explicit user confirmation.
